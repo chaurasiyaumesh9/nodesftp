@@ -49,7 +49,7 @@
 		function sendAjax( fileObj ){
 			console.log('sendAjax :');
 			 jQuery.ajax({
-			 	url: "localhost:3000/sftp",
+			 	url: "https://node-sftp.herokuapp.com/",
 			 	method: "POST",
 			 	data: {
 			 		filedetails: fileObj
