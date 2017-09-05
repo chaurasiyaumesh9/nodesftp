@@ -47,13 +47,16 @@
 		
 
 		function sendAjax( fileObj ){
-			console.log('sendAjax :');
+			console.log('sendAjax :',fileObj);
 			 jQuery.ajax({
-			 	url: "https://node-sftp.herokuapp.com/sftp",
-			 	method: "POST",
+			 	url: "https://node-sftp.herokuapp.com/",
+			 	type: "POST",
+			 	contentType: "application/json",
+			 	dataType: "json",
 			 	data: {
 			 		filedetails: fileObj
 			 	},
+			 	cache: false,
 			 	success: function(result,status,xhr){
 			 		console.log('success : ',result);
 			 	},

@@ -78,8 +78,7 @@ function saveFile(filedetails){
 app.post("/sftp", function(req, res){
 	var fileObj = req.body.filedetails;
 	console.log('fileObj : ',fileObj);
-	res.send(fileObj);
-	return;
+	
 	var savesuccess = saveFile( fileObj );
 	var uploadsuccess = false;
 	if ( savesuccess ) {
