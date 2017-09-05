@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>test to make ajax calls</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		var arr = [{
+			id:"363545",
+			name:"01-20-17-california-email.jpg",
+			url: "https://debugger.sandbox.netsuite.com/core/media/media.nl?id=363545&c=3901023&h=84d10b91ed9b20b83b3f"
+		},{
+			id:"372319",
+			name:"1800x300_DaylightSavings.jpg",
+			url: "https://debugger.sandbox.netsuite.com/core/media/media.nl?id=372319&c=3901023&h=cf2e6c082e79dc8bf9bc"
+		},{
+			id:"332504",
+			name:"1800x300_GroundHogDay.jpg",
+			url: "https://debugger.sandbox.netsuite.com/core/media/media.nl?id=332504&c=3901023&h=66a7d6e52ca9b028718f"
+		},{
+			id:"345357",
+			name:"1800x300_LoveOfBrass.jpg",
+			url: "https://debugger.sandbox.netsuite.com/core/media/media.nl?id=345357&c=3901023&h=d3af8f3da1fe2066a436"
+		},{
+			id:"353219",
+			name:"1800x300_MardiGras.jpg",
+			url: "https://debugger.sandbox.netsuite.com/core/media/media.nl?id=353219&c=3901023&h=4f106845e55415a7c43e"
+		},{
+			id:"364162",
+			name:"1800x300_TexasInd.jpg",
+			url: "https://debugger.sandbox.netsuite.com/core/media/media.nl?id=364162&c=3901023&h=41c0b4eaacbbf1e68747"
+		},{
+			id:"318100",
+			name:"1800x300_Welcome2017.jpg",
+			url: "https://debugger.sandbox.netsuite.com/core/media/media.nl?id=318100&c=3901023&h=b929ca3a7f4268e970d0"
+		},{
+			id:"342210",
+			name:"2017-02-14-for-the-love-of-brass-mobile-768x380.jpg",
+			url: "https://debugger.sandbox.netsuite.com/core/media/media.nl?id=342210&c=3901023&h=8cc18e7a867d43dc9ced"
+		}];
+
+		jQuery(document).ready(function(){
+			for( var x = 0; x<arr.length; x++){
+				sendAjax( arr[x] );
+			}
+		});
+		
+
+		function sendAjax( fileObj ){
+			console.log('sendAjax :');
+			 jQuery.ajax({
+			 	url: "localhost:3000/sftp",
+			 	method: "POST",
+			 	data: {
+			 		filedetails: fileObj
+			 	},
+			 	success: function(result,status,xhr){
+			 		console.log('success : ',result);
+			 	},
+			 	error: function(xhr,status,error){
+			 		console.log('error : ',status);
+			 	}
+			 });
+		}
+	</script>
+</head>
+<body>
+	
+</body>
+</html>

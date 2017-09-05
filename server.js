@@ -9,6 +9,7 @@ var request = require("request");
 var fs = require("fs");
 var Client = require('ssh2-sftp-client');
 var sftp = new Client();
+var cors = require('cors')
 
 var credential = {
     host: 'wematters.brickftp.com',
@@ -19,9 +20,15 @@ var credential = {
 
 var port = process.env.PORT || 3000;
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+app.use(cors());
 
 
 app.use(session({ secret: 'meanstack402', saveUninitialized: true, resave: true})); // session secret
@@ -29,7 +36,10 @@ app.use(session({ secret: 'meanstack402', saveUninitialized: true, resave: true}
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 app.get("/", function(request, response){
-	response.send("hello world");
+	//response.send("hello world");
+	//response.render(__dirname + '/index.html');
+	response.sendFile(path.join(__dirname + '/index.html'));
+
 });
 
 
@@ -67,6 +77,9 @@ function saveFile(filedetails){
 
 app.post("/sftp", function(req, res){
 	var fileObj = req.body.filedetails;
+	console.log('fileObj : ',fileObj);
+	res.send(fileObj);
+	return;
 	var savesuccess = saveFile( fileObj );
 	var uploadsuccess = false;
 	if ( savesuccess ) {
