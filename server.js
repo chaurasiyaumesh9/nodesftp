@@ -36,8 +36,7 @@ app.get("/", function(request, response){
 
 function uploadToFTP( filedetails ){
 	var filename = filedetails.name;
-	var filetype = filedetails.filetype;
-	var fileurl = filedetails.fileurl;
+	var fileurl = filedetails.url;
 	var fileid = filedetails.id;
 
 	sftp.connect(credential).then(() => {
@@ -54,10 +53,9 @@ function uploadToFTP( filedetails ){
 
 function saveFile(filedetails){
 	var filename = filedetails.name;
-	var filetype = filedetails.filetype;
-	var fileurl = filedetails.fileurl;
+	var fileurl = filedetails.url;
 	var fileid = filedetails.id;
-	
+
 	if( fileurl && filename ){
 		request(fileurl).pipe(fs.createWriteStream("./uploads/"+filename));
 
