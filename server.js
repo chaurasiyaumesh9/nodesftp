@@ -26,7 +26,7 @@ app.use(function(req, res, next) {
   next();
 });
 app.use(cookieParser()); // read cookies (needed for auth)
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cors());
 
@@ -49,15 +49,10 @@ function uploadToFTP( filedetails ){
 	var fileurl = filedetails.url;
 	var fileid = filedetails.id;
 
-	sftp.connect(credential).then(() => {
+	return sftp.connect(credential).then(() => {
 	    //return sftp.list('/pa_sftp_test');
-	    return sftp.put(__dirname + "/" + filename, "/pa_test/" + filename);
+	    return sftp.put(__dirname + "/uploads/" + filename, "/pa_test/" + filename);
 
-	}).then((data) => {
-	    //console.log(data, 'the data info');
-	    console.log('file with id : '+ fileid + " uploaded successfully");
-	}).catch((err) => {
-	    console.log(err, 'catch error');
 	});
 }
 
@@ -76,28 +71,30 @@ function saveFile(filedetails){
 
 
 app.post("/sftp", function(req, res){
-	var fileObj = req.body.filedetails;
-	console.log('fileObj : ',fileObj);
+	var fileObj = JSON.parse(req.body.filedetails);
 	
 	var savesuccess = saveFile( fileObj );
-	var uploadsuccess = false;
 	if ( savesuccess ) {
-		uploadsuccess = uploadToFTP( fileObj );
-		if ( uploadsuccess ) {
-			res.json({
+		uploadToFTP( fileObj ).then((data) => {
+			console.log("file with id : " + fileObj.id + " uploaded successfully.");
+		   	res.json({
 				code:'NA200',
 				details: "file with id : " + fileObj.id + " uploaded successfully."
 			});
-		}
+		}).catch((err) => {
+		    //console.log(err, 'catch error');
+		    res.json({
+				code:"NA402",
+				details:"Not able to save it on ftp" + err
+			});
+		});;		
+	}else{
 		res.json({
-			code:"NA402",
-			details:"Not able to save it on ftp"
+			code:"NA401",
+			details:"Not able to save locally"
 		});
 	}
-	res.json({
-		code:"NA401",
-		details:"Not able to save locally"
-	});
+	
 });
 /*
 app.use(function(req, res, next) {
