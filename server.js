@@ -7,16 +7,54 @@ var bodyParser   = require('body-parser');
 var session      = require('express-session');
 var request = require("request");
 var fs = require("fs");
-var Client = require('ssh2-sftp-client');
-var sftp = new Client();
+var Sftp = require('sftp-upload');
+var logger    = require('yocto-logger');
+var sftp      = require('yocto-sftp')(logger);
+
 var cors = require('cors')
 
 var credential = {
     host: 'wematters.brickftp.com',
     port: '22',
+    path: __dirname + '/uploads',
+    remoteDir: '/pa_test',
     username: 'vt30071990@gmail.com',
-    password: 'vaibhav123'
+    password: 'vaibhav123',
+    algorithms  : {
+	    serverHostKey: [ 'ssh-rsa', 'ssh-dss' ],
+	  },
+	 agent: process.env.SSH_AUTH_SOCK
 }
+//sftp = new Sftp(credential);
+
+
+
+
+sftp.load(credential).then(function () {
+  console.log('\n --> config success ... ');
+ 	
+ 	fs.readdir(__dirname + '/uploads', (err, files) => {
+	  files.forEach(file => {
+	    //console.log(file);
+	    sftp.put(__dirname + '/uploads/' + file, '/pa_test/' + file).then(function (list) {
+		    console.log('\n --> ls success \n', list);
+		    fs.appendFile(__dirname + '/results/success.txt', file +'\n', function (err) {
+			  if (err) throw err;
+			  //console.log('Saved!');
+			});
+		 
+		  }).catch(function (error) {
+		    console.log('\n --> ls failed ', error);
+		    fs.appendFile(__dirname + '/results/failure.txt', file +'\n', function (err) {
+			  if (err) throw err;
+			  //console.log('Saved!');
+			});
+		  });
+	  });
+	});
+}).catch(function (error) {
+  console.log('\n --> error : ', error);
+});
 
 var port = process.env.PORT || 3000;
 
@@ -27,7 +65,7 @@ app.use(function(req, res, next) {
 });
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 app.use(cors());
 
 
@@ -41,7 +79,6 @@ app.get("/", function(request, response){
 	response.sendFile(path.join(__dirname + '/index.html'));
 
 });
-
 
 
 function uploadToFTP( filedetails ){
@@ -68,6 +105,20 @@ function saveFile(filedetails){
 	}
 	return false;
 }
+
+app.post('/upload',function(req, res){
+	var filesArray = JSON.parse(req.body.filesarray);
+
+	if(filesArray && filesArray.length > 0){
+		for(var i=0;i<filesArray.length; i++){
+			var filename = filesArray[i]['columns']['name'];
+			var fileurl = filesArray[i]['columns']['url'];
+			request(fileurl).pipe(fs.createWriteStream("./uploads/"+filename));
+			
+		}
+	}
+	//res.json(filesArray);
+});
 
 
 app.post("/sftp", function(req, res){
