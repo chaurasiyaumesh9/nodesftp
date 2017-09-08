@@ -13,13 +13,27 @@ var sftp      = require('yocto-sftp')(logger);
 
 var cors = require('cors')
 
-var credential = {
+/*var credential = {
     host: 'wematters.brickftp.com',
     port: '22',
     path: __dirname + '/uploads',
     remoteDir: '/pa_test',
     username: 'vt30071990@gmail.com',
     password: 'vaibhav123',
+    algorithms  : {
+	    serverHostKey: [ 'ssh-rsa', 'ssh-dss' ],
+	  },
+	 agent: process.env.SSH_AUTH_SOCK
+}*/
+
+
+var credential = {
+    host: 'primary.brickftp.com',
+    port: '22',
+    path: __dirname + '/uploads',
+    remoteDir: '/Test Backup/NodeTest',
+    username: 'pchoksi',
+    password: 'uu8MBYAV*80',
     algorithms  : {
 	    serverHostKey: [ 'ssh-rsa', 'ssh-dss' ],
 	  },
@@ -36,7 +50,7 @@ sftp.load(credential).then(function () {
  	fs.readdir(__dirname + '/uploads', (err, files) => {
 	  files.forEach(file => {
 	    //console.log(file);
-	    sftp.put(__dirname + '/uploads/' + file, '/pa_test/' + file).then(function (list) {
+	    sftp.put(__dirname + '/uploads/' + file, '/Test Backup/NodeTest/' + file).then(function (list) {
 		    console.log('\n --> ls success \n', list);
 		    fs.appendFile(__dirname + '/results/success.txt', file +'\n', function (err) {
 			  if (err) throw err;
