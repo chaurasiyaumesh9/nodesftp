@@ -130,6 +130,28 @@ function saveFile(filedetails){
 	return false;
 }
 
+app.get('/upload',function(req, res){
+	var requestUrl = "https://forms.sandbox.netsuite.com/app/site/hosting/scriptlet.nl?script=642&deploy=1&compid=3901023&h=5550d847d083c01be865";
+	var clientResponse;
+	request
+	  .get(requestUrl)
+	  .on('response', function(response) {
+	  	
+	    console.log(response.statusCode) // 200
+	    //console.log(response.headers['content-type']) // 'image/png'
+	    
+	  });//.pipe(fs.createWriteStream(__dirname + "/results/pa_json.txt"));
+	  
+
+	 //  fs.readFile(__dirname + "/results/pa_json.txt", 'utf8', function(err, data) {  
+		//     if (err) throw err;
+		//     //clientResponse = data;
+		//     console.log(data);
+		// });
+		console.log(clientResponse);
+	  res.json({});
+});
+
 app.post('/upload',function(req, res){
 	var filesArray = JSON.parse(req.body.filesarray);
 

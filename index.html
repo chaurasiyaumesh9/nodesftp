@@ -703,13 +703,28 @@
 
 		jQuery(document).ready(function(){
 			//upload();
+			getLiveData();
 		});
+
+		function getLiveData(){
+			jQuery.ajax({
+				type:'GET',
+				url:'http://localhost:3000/upload',
+				success: function(result,status,xhr){
+			 		console.log('success : ',result);
+			 		//upload();
+			 	},
+			 	error: function(xhr,status,error){
+			 		console.log('error : ',status);
+			 	}
+			});
+		}
 		function upload(){
 			jQuery.ajax({
-			 	url: "https://node-sftp.herokuapp.com/upload",
+			 	url: "http://localhost:3000/upload",
 			 	type: "POST",
 			 	data: {
-			 		filesarray: JSON.stringify(arr)
+			 		filesarray: [] //JSON.stringify(arr)
 			 	},
 			 	cache: false,
 			 	success: function(result,status,xhr){
