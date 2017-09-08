@@ -132,24 +132,35 @@ function saveFile(filedetails){
 
 app.get('/upload',function(req, res){
 	var requestUrl = "https://forms.sandbox.netsuite.com/app/site/hosting/scriptlet.nl?script=642&deploy=1&compid=3901023&h=5550d847d083c01be865";
-	var clientResponse;
+	/*var clientResponse;
 	request
 	  .get(requestUrl)
 	  .on('response', function(response) {
 	  	
-	    console.log(response.statusCode) // 200
+	    console.log(response.data) // 200
 	    //console.log(response.headers['content-type']) // 'image/png'
 	    
 	  });//.pipe(fs.createWriteStream(__dirname + "/results/pa_json.txt"));
-	  
+	  */
+
+
+	  request(requestUrl, function (error, response, body) {
+	  	//console.log('error:', error); // Print the error if one occurred
+	  	//console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+	  	 // Print the HTML for the Google homepage.
+	  	if( body ){
+	  		var filesArray = JSON.parse(body);
+	  		res.json(filesArray);
+	  	}
+	});
 
 	 //  fs.readFile(__dirname + "/results/pa_json.txt", 'utf8', function(err, data) {  
 		//     if (err) throw err;
 		//     //clientResponse = data;
 		//     console.log(data);
 		// });
-		console.log(clientResponse);
-	  res.json({});
+		//console.log(clientResponse);
+	 // res.json({});
 });
 
 app.post('/upload',function(req, res){
