@@ -21,6 +21,7 @@
     "multer": "^1.3.0",
     "multer-sftp": "^0.2.0",
     "request": "^2.81.0",
+    "request-promise": "4.2.1",
     "sftp-upload": "0.0.7",
     "ssh2-sftp-client": "^1.1.0",
     "yocto-logger": "^2.0.0",

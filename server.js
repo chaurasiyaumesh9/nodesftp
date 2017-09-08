@@ -10,6 +10,7 @@ var fs = require("fs");
 var Sftp = require('sftp-upload');
 var logger    = require('yocto-logger');
 var sftp      = require('yocto-sftp')(logger);
+var rp = require('request-promise');
 
 var cors = require('cors')
 
@@ -43,32 +44,34 @@ var credential = {
 
 
 
-
-sftp.load(credential).then(function () {
-  console.log('\n --> config success ... ');
- 	
- 	fs.readdir(__dirname + '/uploads', (err, files) => {
-	  files.forEach(file => {
-	    //console.log(file);
-	    sftp.put(__dirname + '/uploads/' + file, '/Test Backup/NodeTest/' + file).then(function (list) {
-		    console.log('\n --> ls success \n', list);
-		    fs.appendFile(__dirname + '/results/success.txt', file +'\n', function (err) {
-			  if (err) throw err;
-			  //console.log('Saved!');
-			});
-		 
-		  }).catch(function (error) {
-		    console.log('\n --> ls failed ', error);
-		    fs.appendFile(__dirname + '/results/failure.txt', file +'\n', function (err) {
-			  if (err) throw err;
-			  //console.log('Saved!');
-			});
+function uploadAll(){
+	sftp.load(credential).then(function () {
+	  console.log('\n --> config success ... ');
+	 	
+	 	fs.readdir(__dirname + '/uploads', (err, files) => {
+		  files.forEach(file => {
+		    //console.log(file);
+		    sftp.put(__dirname + '/uploads/' + file, '/Test Backup/NodeTest/' + file).then(function (list) {
+			    console.log('\n --> ls success \n', list);
+			    fs.appendFile(__dirname + '/results/success.txt', file +'\n', function (err) {
+				  if (err) throw err;
+				  //console.log('Saved!');
+				});
+			 
+			  }).catch(function (error) {
+			    console.log('\n --> ls failed ', error);
+			    fs.appendFile(__dirname + '/results/failure.txt', file +'\n', function (err) {
+				  if (err) throw err;
+				  //console.log('Saved!');
+				});
+			  });
 		  });
-	  });
+		});
+	}).catch(function (error) {
+	  console.log('\n --> error : ', error);
 	});
-}).catch(function (error) {
-  console.log('\n --> error : ', error);
-});
+}
+
 
 var port = process.env.PORT || 3000;
 
@@ -113,7 +116,14 @@ function saveFile(filedetails){
 	var fileid = filedetails.id;
 
 	if( fileurl && filename ){
-		request(fileurl).pipe(fs.createWriteStream("./uploads/"+filename));
+		request
+		  .get(fileurl)
+		  .on('response', function(response) {
+		    console.log(response.statusCode) // 200
+		    console.log(response.headers['content-type']) // 'image/png'
+		  })
+		  .pipe(fs.createWriteStream("./uploads/"+filename));
+		//request(fileurl).pipe(fs.createWriteStream("./uploads/"+filename));
 
 		return true;
 	}
@@ -127,9 +137,20 @@ app.post('/upload',function(req, res){
 		for(var i=0;i<filesArray.length; i++){
 			var filename = filesArray[i]['columns']['name'];
 			var fileurl = filesArray[i]['columns']['url'];
-			request(fileurl).pipe(fs.createWriteStream("./uploads/"+filename));
+			request
+			  .get(fileurl)
+			  .on('response', function(response) {
+			    //console.log(response.statusCode) // 200
+			    console.log(response.headers['content-type']) // 'image/png'
+			  })
+			  .pipe(fs.createWriteStream("./uploads/" + filename));
+			//request(fileurl).pipe(fs.createWriteStream("./uploads/"+filename));
 			
 		}
+
+		setTimeout(function(){
+			uploadAll();
+		},5000);
 	}
 	//res.json(filesArray);
 });
